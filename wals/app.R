@@ -70,12 +70,17 @@ for (column in features) {
            sort())
 }
 
-special_sort <- function(data) {
-  data %>%
-    as.character() %>%
-    unique() %>%
-    sort()
+leaflet_colours <- as.factor(c("red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "gray", "lightgray", "black"))
+
+leaflet_colours <- factor(leaflet_colours, levels = sample(levels(leaflet_colours)))
+
+assign_colour <- function(wals_col) {
+  colour_index <- as.integer(factor(wals_col)) %% length(leaflet_colours) + 1
+  return(leaflet_colours[colour_index])
 }
+
+wals_wide %<>%
+  mutate(colour = assign_colour(family))
 
 ui <- page_fillable(
   
@@ -107,8 +112,8 @@ ui <- page_fillable(
                   selected = NULL),
       selectInput("family", "Family", c("All families", vfamily)),
       selectInput("genus", "Genus", c("All genera", vgenus)),
-      selectizeInput("language", "Language", choices = c("All languages")),
-      #selectInput("subvarieties", "Subvarieties", c("Include", "Exclude", "Only subvarieties")),
+      selectizeInput("language", "Language", choices = NULL),
+      #selectInput("varieties", "Varieties", c("Include", "Exclude", "Only varieties")),
       selectInput("creoles_pidgins", "Creoles and pidgins", c("Include", "Exclude", "Only creoles and pidgins")),
       selectInput("sign_lgs", "Sign languages", c("Include", "Exclude", "Only sign languages")),
       
@@ -348,8 +353,6 @@ ui <- page_fillable(
       card_header("Features Table"),
       
       card_body(
-        
-        textOutput("lg_selected"),
         
         checkboxInput(inputId = "show_missing_features",
                       label = "Show rows where feature values are missing?",
@@ -1201,17 +1204,7 @@ server <- function(input, output, session) {
       filtered_wals %<>% filter(`144Y - The Position of Negative Morphemes in Object-Initial Languages` == input$f144Y)
     }
     
-    leaflet_colours <- as.factor(c("red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "gray", "lightgray", "black"))
-    
-    assign_colour <- function(wals_col) {
-      colour_index <- as.integer(factor(wals_col)) %% length(leaflet_colours) + 1
-      return(leaflet_colours[colour_index])
-    }
-    
-    filtered_wals %<>%
-      mutate(colour = assign_colour(family))
-    
-    as.data.frame(filtered_wals)    
+    as.data.frame(filtered_wals)
   })
   
   output$wals_map <- renderLeaflet({
@@ -1221,6 +1214,8 @@ server <- function(input, output, session) {
       addTiles() %>%
       setView(lng = 0, lat = 20, zoom = 2) %>%
       addAwesomeMarkers(
+        lng = ~longitude,
+        lat = ~latitude,
         popup = ~language,
         icon = ~awesomeIcons(
           icon = "comment",

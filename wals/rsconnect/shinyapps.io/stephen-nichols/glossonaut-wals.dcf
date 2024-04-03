@@ -5,7 +5,7 @@ account: stephen-nichols
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 11644846
-bundleId: 8446346
+bundleId: 8451589
 url: https://stephen-nichols.shinyapps.io/glossonaut-wals/
 version: 1
 asMultiple: FALSE
