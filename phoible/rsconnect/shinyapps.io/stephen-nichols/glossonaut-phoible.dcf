@@ -1,12 +1,12 @@
-name: glossonaut-wals
-title: glossonaut-wals
+name: glossonaut-phoible
+title: glossonaut-phoible
 username: stephen-nichols
 account: stephen-nichols
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 11644846
-bundleId: 8451802
-url: https://stephen-nichols.shinyapps.io/glossonaut-wals/
+appId: 11660724
+bundleId: 8451816
+url: https://stephen-nichols.shinyapps.io/glossonaut-phoible/
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
