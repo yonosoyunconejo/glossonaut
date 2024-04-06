@@ -46,28 +46,35 @@ vmacroarea <- special_pull(wals_wide, macroarea)
 vcountrycodes <- special_pull(wals_wide, countrycodes, split = TRUE)
 vcountrycodes <- vcountrycodes[2:length(vcountrycodes)]
 
-custom_sort <- function(x) {
-  numbers <- gsub("\\D", "", x)
-  non_numbers <- gsub("\\d", "", x)
+custom_sort <- function(x, add_space = TRUE) {
+  numbers <- gsub("\\D.*", "", x)
+  non_numbers <- gsub("^\\d+\\s*", "", x)
   numbers_padded <- sprintf("%03d", as.numeric(numbers))
-  combined <- paste0(numbers_padded, non_numbers)
+  if (add_space) {
+    combined <- paste0(numbers_padded, " ", non_numbers)
+  } else {
+    combined <- paste0(numbers_padded, non_numbers)
+    }
   combined_sorted <- combined[order(combined)]
   combined_sorted <- gsub("^0+", "", combined_sorted)
   return(combined_sorted)
 }
 
 features <- colnames(wals_wide[,11:length(wals_wide)])
-features <- custom_sort(features)
+features <- custom_sort(features, add_space = FALSE)
 
 for (column in features) {
   var_name <- paste0("v", str_extract(column, "^[^\\s]+"))
   
-  assign(var_name,
-         wals_wide %>%
+  var_elements <- wals_wide %>%
            filter(!is.na({{column}})) %>%
            pull({{column}}) %>%
            unique() %>%
-           sort())
+           custom_sort()
+  
+  var_elements <- var_elements[2:length(var_elements)]
+  
+  assign(var_name, var_elements)
 }
 
 leaflet_colours <- as.factor(c("red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "gray", "lightgray", "black"))
@@ -86,7 +93,7 @@ ui <- page_fillable(
   
   fillable = TRUE,
   
-  title = "Glossonaut — WALS",
+  title = "Glossonaut WALS",
   
   theme = bs_theme(
     bg = "#ffffff",

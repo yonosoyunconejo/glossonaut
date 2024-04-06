@@ -125,7 +125,7 @@ ui <- page_fillable(
   
   fillable = TRUE,
   
-  title = "Glossonaut — PHOIBLE",
+  title = "Glossonaut PHOIBLE",
   
   theme = bs_theme(
     bg = "#ffffff",
